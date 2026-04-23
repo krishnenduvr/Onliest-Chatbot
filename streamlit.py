@@ -13,7 +13,7 @@ st = importlib.util.module_from_spec(STREAMLIT_SPEC)
 sys.modules["streamlit"] = st
 STREAMLIT_SPEC.loader.exec_module(st)
 
-from chatbot.config import OLLAMA_BASE_URL, OLLAMA_MODEL
+from config import OLLAMA_BASE_URL, OLLAMA_MODEL
 from chatbot.engine import get_response
 
 
