@@ -1,6 +1,2 @@
-streamlit==1.23.1
-python-dotenv==0.21.1
-fastapi==0.136.0
-pydantic==2.13.3
-uvicorn==0.46.0
-pillow==9.5.0
+streamlit>=1.23.1,<2
+python-dotenv>=0.21.1,<2
