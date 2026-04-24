@@ -2,13 +2,13 @@ import json
 from urllib import error, request
 
 try:
-    from chatbot.config import OLLAMA_API_KEY, OLLAMA_BASE_URL, OLLAMA_MODEL
+    from config import OLLAMA_API_KEY, OLLAMA_BASE_URL, OLLAMA_MODEL
     from chatbot.intents import detect_intent
     from chatbot.memory import get_context, update_context
 except ModuleNotFoundError:
     from config import OLLAMA_API_KEY, OLLAMA_BASE_URL, OLLAMA_MODEL
-    from intents import detect_intent
-    from memory import get_context, update_context
+    from chatbot.intents import detect_intent
+    from chatbot.memory import get_context, update_context
 
 
 def build_messages(message, context):
