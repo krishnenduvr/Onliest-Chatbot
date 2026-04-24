@@ -5,6 +5,9 @@ import streamlit as st
 from engine import get_response
 
 
+WELCOME_MESSAGE = "Welcome! Ask me anything and I will help you in a conversational way."
+
+
 st.set_page_config(
     page_title="Aurora Chat",
     page_icon="🤖",
@@ -20,16 +23,15 @@ def safe_rerun():
         st.experimental_rerun()
 
 
+def initial_messages():
+    return [{"role": "assistant", "content": WELCOME_MESSAGE}]
+
+
 def init_state():
     if "user_id" not in st.session_state:
         st.session_state["user_id"] = f"streamlit-{uuid.uuid4().hex[:8]}"
     if "messages" not in st.session_state:
-        st.session_state["messages"] = [
-            {
-                "role": "assistant",
-                "content": "Welcome! Ask me anything and I will help you in a conversational way.",
-            }
-        ]
+        st.session_state["messages"] = initial_messages()
     if "conversations" not in st.session_state:
         conversation_id = f"chat-{uuid.uuid4().hex[:8]}"
         st.session_state["conversations"] = {
@@ -47,8 +49,30 @@ def init_state():
         st.session_state["draft_prompt"] = ""
     if "queued_prompt" not in st.session_state:
         st.session_state["queued_prompt"] = ""
+    if "pending_chat_reset" not in st.session_state:
+        st.session_state["pending_chat_reset"] = False
     if "theme_mode" not in st.session_state:
         st.session_state["theme_mode"] = "Light"
+
+
+def reset_chat_state():
+    conversation_id = f"chat-{uuid.uuid4().hex[:8]}"
+    fresh_messages = initial_messages()
+    st.session_state["user_id"] = f"streamlit-{uuid.uuid4().hex[:8]}"
+    st.session_state["messages"] = fresh_messages
+    st.session_state["conversations"] = {
+        conversation_id: {
+            "title": "New chat",
+            "messages": list(fresh_messages),
+        }
+    }
+    st.session_state["active_conversation_id"] = conversation_id
+    st.session_state["draft_prompt"] = ""
+    st.session_state["queued_prompt"] = ""
+
+
+def queue_chat_reset():
+    st.session_state["pending_chat_reset"] = True
 
 
 def conversation_title(messages):
@@ -402,8 +426,8 @@ def render_quick_prompts():
     cols = st.columns(4)
     prompts = [
         "What does Onliest World do?",
-        "What products and services does Onliest World offer?",
-        "Where are Onliest World's office locations?",
+        "What can you help me with?",
+        "Can you summarize this for me?",
         "How can I contact Onliest World?",
     ]
     for col, prompt in zip(cols, prompts):
@@ -458,6 +482,7 @@ def render_chat():
             )
         with refresh_col:
             if st.button("Refresh", key="refresh_main", use_container_width=True):
+                queue_chat_reset()
                 safe_rerun()
         if st.session_state.queued_prompt:
             prompt = st.session_state.queued_prompt
@@ -533,7 +558,6 @@ def render_contact():
                 <strong>Corporate Office:</strong> 9711 Washingtonian Blvd suite 550 Gaithersburg MD, 20878, United States<br><br>
                 <strong>Technology Center:</strong> 7th Floor, Building No. 32, RMZ Ecoworld, Devarabisanahalli, Bengaluru, Karnataka 560103<br><br>
                 <strong>Operations Center:</strong> D No: 50-28-23, Opp. Lane of Karur Vysya Bank, TPT Colony, Balayya Sastri Layout, Seethammadara, Visakhapatnam 530013<br><br>
-                <strong>Manufacturing Facility:</strong> UAE (Coming soon)
             </div>
         </div>
         """,
@@ -543,6 +567,8 @@ def render_contact():
 
 def main():
     init_state()
+    if st.session_state.pop("pending_chat_reset", False):
+        reset_chat_state()
     inject_styles()
     render_sidebar()
     render_hero()
