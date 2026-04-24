@@ -2,8 +2,7 @@ import uuid
 
 import streamlit as st
 
-from config import OLLAMA_BASE_URL, OLLAMA_MODEL
-from chatbot.engine import get_response
+from engine import get_response
 
 
 st.set_page_config(
