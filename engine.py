@@ -1,14 +1,9 @@
 import json
 from urllib import error, request
 
-try:
-    from config import OLLAMA_API_KEY, OLLAMA_BASE_URL, OLLAMA_MODEL
-    from chatbot.intents import detect_intent
-    from chatbot.memory import get_context, update_context
-except ModuleNotFoundError:
-    from config import OLLAMA_API_KEY, OLLAMA_BASE_URL, OLLAMA_MODEL
-    from chatbot.intents import detect_intent
-    from chatbot.memory import get_context, update_context
+from config import OLLAMA_API_KEY, OLLAMA_BASE_URL, OLLAMA_MODEL
+from intents import detect_intent
+from memory import get_context, update_context
 
 
 def build_messages(message, context):
@@ -44,7 +39,7 @@ def format_api_error(exc):
         return (
             "Ollama connection error: if you are using local Ollama, start it first. "
             "If you are using an Ollama API key, set OLLAMA_BASE_URL=https://ollama.com "
-            "and add OLLAMA_API_KEY in chatbot/.env."
+            "and add OLLAMA_API_KEY in your environment or .env file."
         )
 
     if "404" in message:
